@@ -1,0 +1,64 @@
+---
+title: "Instructions for Using the FindCarApp"
+author: "Nina"
+date: "Sunday, April 26, 2015"
+output: html_document
+runtime: shiny
+---
+
+## Database
+
+- The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973-74 models). For more details, see [mtcars](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html)
+
+
+ 
+## Inputs 
+
+#### 1. Use checkbox input to select transmission types: Manual, automatic or both.
+
+
+```{r, echo=FALSE}
+inputPanel(
+  checkboxGroupInput('am', label=h4('Transmission Type:'), 
+                                      c("Manual (1)"=1, "Automatic (0)"=0), selected= c(0,1))
+)
+
+```
+
+#### 2. Use the slider input to select the minimum miles per gallon you require.
+```{r, echo=FALSE}
+inputPanel(
+   sliderInput("mpg", h4("Min Miles per Gallon: "), min=10, max=35, value=10)
+)
+```
+#### 3. Use the slider input to select the minimum gross horsepower you require.
+```{r, echo=FALSE}
+inputPanel(
+    sliderInput("hp", h4("Min Gross Horsepower: "), min=50, max=250, value=50) 
+)
+```
+
+
+## Outputs
+
+####1. The average mpg of your selections
+
+The App will calculate the average miles per gallon of the cars that you selected.
+
+####2. List of cars meet your requirements
+
+The App will display all the cars meet your requirement in the datatable with other features, such as weight, gear, number of cylinders, etc. 
+```{r, echo=FALSE}
+data(mtcars)
+
+
+     
+        
+mycars<-cbind(rownames(mtcars),mtcars[,c(1,2,3,4,6,9,10)])
+names(mycars)<-c("Model","MPG","Cylinders","Displacement", "Horsepower","Weight", "Transmission", "Gear")
+renderDataTable({
+                mycars[ which(mycars$Transmission %in% input$am
+                          & mycars$MPG>input$mpg & mycars$Horsepower > input$hp),]})
+
+```
+
